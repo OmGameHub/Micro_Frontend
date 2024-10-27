@@ -27,11 +27,11 @@ That’s where micro frontends come into play.
 ## What is a Micro Frontend?
 
 <img 
-src="./images/example_01.png?auto=compress,format&format=webp;" 
+src="./images/example_01.webp" 
 alt="Micro Frontends" 
 />
 
-A **micro frontend** is a method of breaking a frontend application into smaller, semi-independent micro-applications. Each micro frontend can be developed, deployed, and updated independently while still functioning together as part of a cohesive whole. Different teams can take ownership of different parts of the frontend, which leads to more efficient workflows, fewer conflicts, and greater autonomy.
+A **micro frontend** is a method of breaking a frontend application into smaller, semi-independent mini-applications. Each micro frontend can be developed, deployed and updated independently, but they also work together as part of a bigger system. By applying Domain-Driven Design (DDD) principles, teams can concentrate on specific business domains, which enhances efficiency, minimizes conflicts, and ensures alignment with business requirements.
 
 ## Use Cases for Micro Frontends
 
@@ -220,7 +220,7 @@ const Counter = () => {
 export default Counter;
 ```
 
-You can find the remote repository [here](https://github.com/OmGameHub/Micro_Frontend/tree/main/host_app).
+You can find the host repository [here](https://github.com/OmGameHub/Micro_Frontend/tree/main/host_app).
 
 This example demonstrates how to set up a remote and host repository using Module Federation, enabling independent development and deployment of micro frontends.
 
@@ -278,31 +278,41 @@ export default App;
 import ReactDOM from "react-dom/client";
 import AppPage from "./App";
 
+// Import CSS styles for the project and the App component.
+// The '?inline' query parameter enables CSS Modules with inline styles.
 import ProjectStyle from "./index.css?inline";
 import AppStyle from "./App.css?inline";
 
+// Define a custom HTML element named 'RandomNumberPage'.
 class RandomNumberPage extends HTMLElement {
+    // Lifecycle method called when the element is connected to the DOM.
     connectedCallback() {
+        // Create a div element to serve as the mount point for the React application.
         const mountPoint = document.createElement("div");
         mountPoint.id = "root";
 
+        // Create a shadow DOM for the custom element with 'open' mode.
         const shadowRoot = this.attachShadow({ mode: "open" });
 
-        // Add styles
+        // Create a style element and set its content to include project and app styles.
         const style = document.createElement("style");
         style.textContent = `
             ${ProjectStyle}
             ${AppStyle}
         `;
 
+        // Append the style element and the mount point to the shadow DOM.
         shadowRoot.appendChild(style);
         shadowRoot.appendChild(mountPoint);
 
+        // Create a React root using the mount point.
         const root = ReactDOM.createRoot(mountPoint);
+        // Render the AppPage component into the root.
         root.render(<AppPage />);
     }
 }
 
+// Define the 'random-number-page' custom element using the RandomNumberPage class.
 customElements.define("random-number-page", RandomNumberPage);
 ```
 
@@ -374,7 +384,7 @@ const RandomNumber = () => {
 export default RandomNumber;
 ```
 
-You can find the remote repository [here](https://github.com/OmGameHub/Micro_Frontend/tree/main/host_app).
+You can find the host repository [here](https://github.com/OmGameHub/Micro_Frontend/tree/main/host_app).
 
 This example shows how to use Web Components to integrate a remote application into a host application, providing a flexible way to embed micro frontends.
 
@@ -461,7 +471,7 @@ const RandomColor = () => {
 export default RandomColor;
 ```
 
-You can find the remote repository [here](https://github.com/OmGameHub/Micro_Frontend/tree/main/host_app).
+You can find the host repository [here](https://github.com/OmGameHub/Micro_Frontend/tree/main/host_app).
 
 This example shows how to use IFrames to integrate a remote application into a host application, providing a simple way to embed micro frontends.
 
@@ -478,7 +488,7 @@ This example shows how to use IFrames to integrate a remote application into a h
 
 ### Disadvantages of Micro Frontends
 
--   **Increased Complexity**: Managing multiple micro frontends introduces complexity, particularly when coordinating communication and data sharing between them.
+-   **Increased Complexity**: Managing multiple micro frontends introduces complexity. It requires careful planning, data sharing and maintaining a consistent user experience across components. This complexity can provide difficulties in debugging and code management.
 
 -   **Performance Overhead**: Micro frontends can introduce performance bottlenecks due to increased communication between different parts of the app. Optimizing network requests and lazy loading modules are essential practices to mitigate this.
 
@@ -486,13 +496,33 @@ This example shows how to use IFrames to integrate a remote application into a h
 
 -   **Testing Overhead**: Testing micro frontends in isolation and together requires more effort. Unit testing, integration testing, and end-to-end testing must account for the interactions between different micro frontends.
 
+-   **Maintenance and Security Overhead**: Maintaining multiple independently deployed micro frontends requires careful dependency management, consistent security patching, and version control, which can be resource-intensive and complex.
+
+-   **Higher Costs**: Implementing micro frontends may increase costs due to the additional infrastructure, time, and resources required to manage and deploy numerous independent apps, as well as the increased coordination and maintenance activities.
+
 ### Best Practices for Implementing Micro Frontends
 
-1. **Shared Components and Libraries**: Use shared libraries for common components, but ensure each micro frontend can operate independently.
-2. **State Management**: Avoid sharing global state between micro frontends unless absolutely necessary. When state needs to be shared, use pub/sub mechanisms or a shared service like Redux.
-3. **Routing and Navigation**: Implement a unified routing system where the shell or root application manages navigation while individual micro frontends handle specific routes.
-4. **CI/CD Pipeline**: Set up automated pipelines for continuous integration and delivery (CI/CD) to ensure that micro frontends can be independently built, tested, and deployed.
-5. **Versioning**: Be cautious with versioning shared dependencies. Tools like **Webpack Module Federation** can help, but version conflicts can arise if not carefully managed.
+-   **Define Clear Boundaries**: Create clear boundaries for each micro frontend based on business domains or user workflows. This allows teams to work independently and makes it easier to scale and maintain the project over time.
+
+-   **Establish a Common Design System**: Use a common design system to ensure visual and functional consistency across micro frontends. This helps maintain a seamless user experience and reduces the need for custom styling, minimizing redundancy across components.
+
+-   **Optimize for Performance**: Minimize network requests/queries, avoid duplicate dependencies, and use caching and lazy loading strategies. These techniques minimize load times and ensure each micro frontend performs optimally when integrated.
+
+-   **Standardize Communication and Data Sharing**: Define the protocols for how micro frontends will communicate with one another whether through a shared state, event bus, or other techniques. Clear data-sharing conventions help reduce dependency and avoid complications caused by inconsistent data.
+
+-   **Decouple Dependencies**: Minimize mutual dependencies between micro frontends. Independent dependency management enables each micro frontend to run and be updated independently, making maintenance and deployments more seamless.
+
+-   **Use Independent Deployment Pipelines**: Create deployment pipelines that will allow each micro frontend to be build, tested, and deployed individually. This reduces integration risks and allows for rapid, discrete upgrades without affecting the entire system.
+
+-   **Invest in Automated Testing**: Implement robust testing strategies that cover both isolated unit tests and integrated end-to-end tests. Automated testing ensures that each micro frontend functions correctly on its own and with others, helping to catch integration issues early.
+
+-   **Centralized Authentication and Security**: Implement a centralized authentication and authorization system to handle user access across micro frontends. This approach simplifies security management and ensures consistent enforcement of access policies.
+
+-   **Monitor and Log Independently**: Set up separate monitoring and logging for each micro frontend to quickly find out and rectify issues. This allows for effective troubleshooting and specific health management of each micro frontend.
+
+-   **Plan for Version Control and Dependency Management**: Use version control policies that allow micro frontends to evolve independently without causing version conflicts. Dependency management tools and strategies can help maintain stable versions and prevent incompatible updates.
+
+-   **Establish Strong Cross-Team Collaboration**: Encourage open communication and coordination among teams handling different micro frontends. Shared documentation, regular syncs and agreement on goals and processes can all contribute to smooth integration and a cohesive end product.
 
 ### Conclusion
 
